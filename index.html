@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            margin: 20px auto;
+            width: 320px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            background: lightgray;
+            border: 2px solid black;
+            cursor: pointer;
+        }
+        .cell:hover {
+            background: #ddd;
+        }
+        .winner {
+            font-size: 1.5em;
+            margin: 20px;
+            color: #333;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            background: #ff758c;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #ff555e;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    
+    <div>
+        <label>Player X Name: <input type="text" id="playerX" placeholder="Enter name"></label>
+        <br><br>
+        <label>Player O Name: <input type="text" id="playerO" placeholder="Enter name"></label>
+        <br><br>
+        <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <div class="winner" id="winnerText"></div>
+    <div class="board" id="board" style="display: none;"></div>
+    <button id="restartBtn" onclick="restartGame()" style="display: none;">Restart</button>
+
+    <script>
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = false;
+        let playerXName = "";
+        let playerOName = "";
+
+        function startGame() {
+            playerXName = document.getElementById('playerX').value || "Player X";
+            playerOName = document.getElementById('playerO').value || "Player O";
+            document.getElementById('board').style.display = "grid";
+            document.getElementById('restartBtn').style.display = "block";
+            gameActive = true;
+            createBoard();
+        }
+
+        function createBoard() {
+            const boardDiv = document.getElementById('board');
+            boardDiv.innerHTML = '';
+            board.forEach((cell, index) => {
+                const cellDiv = document.createElement('div');
+                cellDiv.classList.add('cell');
+                cellDiv.innerText = cell;
+                cellDiv.addEventListener('click', () => handleMove(index));
+                boardDiv.appendChild(cellDiv);
+            });
+        }
+
+        function handleMove(index) {
+            if (board[index] === '' && gameActive) {
+                board[index] = currentPlayer;
+                createBoard();
+                checkGameStatus();
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            }
+        }
+
+        function checkGameStatus() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+            
+            for (let pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    let winnerName = board[a] === 'X' ? playerXName : playerOName;
+                    document.getElementById('winnerText').innerText = `${winnerName} Wins! 🎉`;
+                    gameActive = false;
+                    return;
+                }
+            }
+
+            if (!board.includes('')) {
+                document.getElementById('winnerText').innerText = "It's a Tie!";
+                gameActive = false;
+            }
+        }
+
+        function restartGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            gameActive = true;
+            currentPlayer = 'X';
+            document.getElementById('winnerText').innerText = '';
+            createBoard();
+        }
+    </script>
+</body>
+</html>
